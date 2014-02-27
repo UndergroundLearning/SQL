@@ -1,0 +1,291 @@
+PIERWSZA KARTKA
+CREATE OR REPLACE VIEW dzial10
+AS
+SELECT nr_akt, nazwisko, stanowisko, id_dzialu
+FROM pracownicy WHERE id_dzialu = 10 WITH CHECK OPTION; 
+
+INSERT INTO dzial10 VALUES(8914, 'POPIEŁUSZKO', 'POSEŁ', 10); 
+
+--INSERT INTO dzial10 VALUES(8914, 'POPIEŁUSZKO', 'POSEŁ', 11);
+--CHECK OPTION dziala i nie pozwala wprowadzic innego nr_dzialu niz 10) 
+
+SELECT * FROM dzial10; 
+
+INSERT INTO stanowiska
+VALUES('GŁÓWNY OPERATOR', (SELECT placa_min FROM stanowiska WHERE stanowisko = 'OPERATOR') + 500,
+(SELECT placa_max FROM stanowiska WHERE stanowisko = 'OPERATOR') + 1000);
+INSERT INTO stanowiska
+VALUES('GŁÓWNY LOGISTYK', (SELECT placa_min FROM stanowiska WHERE stanowisko = 'LOGISTYK') + 500,
+(SELECT placa_max FROM stanowiska WHERE stanowisko = 'LOGISTYK') + 1000);
+INSERT INTO stanowiska
+VALUES('GŁÓWNY TECHNOLOG', (SELECT placa_min FROM stanowiska WHERE stanowisko = 'TECHNOLOG') + 500,
+(SELECT placa_max FROM stanowiska WHERE stanowisko = 'TECHNOLOG') + 1000); 
+
+select * from stanowiska; 
+
+CREATE TABLE pokoje
+(
+numer_pokoju number(3) CONSTRAINT p_np_pk PRIMARY KEY,
+id_dzialu,
+liczba_okien number(1),
+CONSTRAINT p_id_fk FOREIGN KEY (id_dzialu) REFERENCES dzialy(id_dzialu)
+); 
+
+INSERT INTO pokoje VALUES(1, 0, 2); --narusza wiezy integralnosci FK 
+
+ALTER TABLE pracownicy ADD telefon varchar2(10) ADD plec varchar2(1); 
+
+desc pracownicy; 
+
+
+DRUGA KARTKA
+
+CREATE OR REPLACE VIEW pracownice
+AS
+(SELECT * FROM pracownicy WHERE nazwisko LIKE '%SKA'); 
+
+INSERT INTO pracownice
+VALUES(9000, 'POBRALSKA', 'PIECHUR', 8901, sysdate, null, 10000, 1000, 500, 10, null, null); 
+
+SELECT * FROM pracownice; 
+
+CREATE TABLE uczelnie
+(
+id_uczelni number(4) PRIMARY KEY,
+nazwa varchar2(100) CONSTRAINT u_nazwa_u unique,
+adres varchar2(100),
+budzet number(10, 2),
+zalozona date DEFAULT sysdate
+); 
+
+INSERT INTO uczelnie VALUES(1, 'Zeromski', 'Niepodleglosci', 10000, sysdate - 50);
+INSERT INTO uczelnie VALUES(2, 'Zeromski', 'Aleksandra', 1000, sysdate - 100);
+--narusza wiezel integralnosci unique w nazwa 
+
+ALTER TABLE uczelnie ADD kontakt varchar(50); 
+
+desc uczelnie; 
+
+UPDATE pracownicy SET
+dod_funkcyjny =
+(SELECT nvl(avg(p.placa), 0) FROM pracownicy p WHERE p.kierownik IN (SELECT nr_akt FROM pracownicy WHERE nazwisko = 'MICHALSKI'))
+WHERE id_dzialu = 20; 
+
+SELECT * FROM pracownicy WHERE id_dzialu = 20; 
+
+ROLLBACK;
+
+Rozszyfrowałem 3 zestaw pytań który był nie wyraźny na zdjęciach.
+1.Utwórz perspektywę tylko do odczytu o nazwie miejsce_pracy zawierającą nazwisko pracownika i siedzibę działu, w którym pracuje.
+2.Dopisz rekord do tej perspektywy.
+3.Utwórz relacje KSIAZKI o następujących atrybutach i ograniczeniach.
+Nazwa Typ
+ID_KSIAZKI liczbowy(max 10 cyfr)
+klucz podstawowy(ograniczenie atrybutu)
+TYTUL łańcuchowy o zmiennej długości(max 100 znaków)
+wartość obowiązkowa
+AUTORZY łańcuchowy o zmiennej długości (max 100 znaków)
+CENA liczbowy(max 6 cyfr, 2 po przecinku)
+DATA_WYDANIA typ reprezentujący datę
+4.Po utworzeniu relacji spróbuj wstawić krotki naruszające ograniczenia integralnościowe "wartość obowiązkowa".
+5.Zwiększ o 5 znaków pole nazwisko w tabeli PRACOWNICY.
+6.Zwiększyć płacę podstawową do 120% średniej płacy podstawowej w dziale pracownika oraz zwiększyć płacę dodatkową do wartości równej maksymalnej płacy dodatkowej w zespole pracownika. Operacji dokonać tylko dla pracowników zatrudnionych po 1989 roku.
+A co do odpowiedzi fezi z drugiej kartki zadanie 1 trzeba przerobić w taki sposób żeby były 2 like tzn '%SKA' i bodajże '%CKA'. Wtedy będzie tak jak chce tego mgr Kostrzewska.
+Zadanie 3 jest źle ponieważ są tam ograniczenia atrybutów a w poleceniu jest napisane że mają być ograniczenia relacji.
+
+
+utworzyć tabelę zawierającą datę wyjazdu (wcześniejszą niż przyjazdu) i datę przyjazdu (domyślnie dzisiaj):
+CREATE OR REPLACE TRIGGER WYZW_WYJAZDY
+BEFORE INSERT ON WYJAZDY
+FOR EACH ROW
+BEGIN
+IF :NEW.DATA_WYJ > :NEW.DATA_POW
+THEN RAISE_APPLICATION_ERROR(-20020, 'Blad, data wyjazdu jest pozniejsza niz przyjazdy');
+END IF;
+END; 
+
+lub
+
+CREATE TABLE trans
+(
+id_t number(5) PRIMARY KEY,
+wdata date,
+pdata date DEFAULT sysdate,
+CONSTRAINT t_pdata_ch CHECK (wdata < pdata)
+);
+
+1. stworzyć 3 tabele przedmioty(kod_przedmiotu, nazwa, typ(wykład, lab)<--tutaj do tego pola można było wpisywać tylko te dwie wartości (tj. wykład lub lab), ilosc_godzin i coś tam jeszcze), wykładowcy(id_wykladowcy, nazwisko, imie i coś jeszcze), i tabele zajecia(kolejny_numer, przedmiot, id_wykladowcy i cos jeszcze). Trzeba było połączyć te tabele ze sobą czyli wiadomo pole przedmiot z tabeli zajęcia połączyc z polem kod_przedmiotu z tabeli przedmioty i id_wykladowcy z id_wykladowcy Oczywiście każda tabela ma mieć klucz główny ale to chyba tez wiadome.
+2. Następnie należało wprowadzić przykładowe wartości do wszystkich pól.
+Ta część była na ocenę 3 i zalke
+3. A po za tym była jakaś prosta perspektywa której nie pamiętam
+4. Trzeba też było do utworzonej tabeli wykladowcy wpisac kolejna kolumne o nazwie email (polecenie alter table wykladowcy add email varchar2(30);
+
+1) create table RODZICE(
+pesel number(10) constraint rodz_pes_pk PRIMARY KEY,
+imie varchar2(10),
+nazwisko varchar2(10),
+adres varchar2(10),
+telefon1 number(9),
+telefon2 number(9),
+telefon3 number(9),
+mail varchar2(10),
+miejsce_pracy varchar2(20)
+);
+create table UCZNIOWIE(
+nr_legitymacji number(10) constraint ucz_legit_pk PRIMARY KEY,
+rodzic number(10) constraint ucz_rodz_fk references RODZICE(pesel),
+imie varchar2(10),
+nazwisko varchar2(10),
+data_urodzenia DATE,
+data_rozp_nauki DATE
+);
+create table KLASA(
+id_klasy number(3) constraint kl_id_pk PRIMARY KEY,
+wychowawca varchar(10),
+nazwa varchar(2)
+);
+2) alter table uczniowie add (
+klasa number(3) constraint ucz_kl_fk references KLASA(id_klasy)
+);
+3) create table prac_archiw as select * from pracownicy where stanowisko like 'PRAKTYKANT';
+4) create or replace view budzet_zespolu as select id_dzialu, nazwa, sum(nvl(placa,0)+nvl(dod_funkcyjny,0)+nvl(prowizja,0)) budzet from dzialy natural join pracownicy group by id_dzialu, nazwa order by id_dzialu;
+5) select table_name, constraint_name from user_constraints where table_name in('PRACOWNICY','STANOWISKA','DZIALY');
+
+1. Utworzyć tabele:
+POLISA:
+KOD NOT NULL VARCHAR2(10)
+NAZWA NOT NULL VARCHAR2(20)
+OPIS VARCHAR2(50)
+KWOTA NOT NULL NUMBER(10,2) (większa od zera)
+FIRMA NOT NULL VARCHAR2(10)
+OKRES NUMBER(4) (w latach) 
+
+UMOWY :
+NR_KOL NOT NULL NUMBER(10)
+DLA_KOGO NUMBER(4)
+POLISA NOT NULL VARCHAR2(10)
+DATA_PODP DATE
+(strukturę tabel skopiowałem z mojego konta, ale chyba każdy wie o co biega. Tak to powinno już na gotowo wyglądać.)
+Należało dodać klucze główne do tabel i klucze obce polegająca na tym że umowa może być zawarta tylko z osobą z tabeli pracownicy oraz polisa w umowie musi się odnosić do tabeli polisy.
+Wypełnić to wszystko sensownymi danymi
+2. Utworzyć perspektywę w której z tabeli pracownicy wybierzecie tylko kierowników wraz z nazwą działu w którym pracują.
+3. Utworzyć procedurę, która podnosi danemu pracownikowi pensję o zadaną kwotę. Procedurę wywołujemy z 2 argumentami: nr_pracownika oraz o ile podwyżka.
+CREATE OR REPLACE PROCEDURE podwyzka (id in number, ile in number)
+AS
+BEGIN
+UPDATE pracownicy SET placa = placa + ile WHERE nr_akt=id;
+END;
+/
+EXEC podwyzka(8091, 1250);
+
+4. Wypisać więzy integralności dla tabeli pracownicy.
+Dla nie wtajemniczonych: select * from user_constraints where table_name='PRACOWNICY';
+i oprócz tego trzeba było słownie zdefiniować co który klucz oznacza i do czego się odnosi
+
+Cóż ja miałem inne zadania, ale podzielę się odpowiedziami (nie wiem czy dobrze, ale u mnie działało wszystko OK, oczywiście nie wszystko na raz )
+Treści nie pamiętam, ale można się domyślić. 
+
+-- 1)
+DROP TABLE rachunki;
+DROP TABLE wplaty; 
+
+CREATE TABLE rachunki(
+nazw_im VARCHAR2(62),
+nr_rach NUMBER(5) CONSTRAINT rach_nr_pk PRIMARY KEY,
+kwota NUMBER(7,2) CONSTRAINT rach_kw_ch CHECK (kwota > 0) NOT NULL,
+termin DATE CONSTRAINT rach_term_ch CHECK (termin <
+to_date('2009/04/30','YYYY/MM/DD'))); 
+
+CREATE TABLE wplaty(
+nr_wp NUMBER(5) CONSTRAINT wp_nr_pk PRIMARY KEY,
+nr_rach NUMBER(5) CONSTRAINT wp_nr_ref REFERENCES rachunki(nr_rach),
+kwota_wp NUMBER(7,2) CONSTRAINT wp_kw_ch CHECK (kwota_wp>0) NOT NULL,
+data_wp DATE ); 
+
+INSERT INTO rachunki VALUES('Stefan Gerard', 11111, 356, '2009/03/11');
+INSERT INTO rachunki VALUES('August Niedobry', 22222, 333,2, '2009/04/01');
+INSERT INTO rachunki VALUES('Genowefa Pigwa', 33333, 2313,6, '2009/02/10'); 
+
+INSERT INTO wplaty VALUES(1, 11111, 222, '09/03/9');
+INSERT INTO wplaty VALUES(2, 33333, 2313, '09/02/11');
+INSERT INTO wplaty VALUES(3, 22222, 300, '09/02/11');
+-- 2)
+-- Pamietajcie okienko ma byc czyste
+CREATE or REPLACE TRIGGER wyzwalacz_wplaty
+BEFORE INSERT ON wplaty
+FOR EACH ROW
+DECLARE
+term DATE;
+kw NUMBER;
+BEGIN
+SELECT termin,kwota INTO term, kw FROM rachunki WHERE nr_rach = :NEW.nr_rach;
+IF (:NEW.data_wp > term)
+THEN RAISE_APPLICATION_ERROR (-20020, 'Przekroczony termin zaplaty: '|| :NEW.data_wp );
+ELSE IF (:NEW.kwota_wp < kw)
+THEN RAISE_APPLICATION_ERROR (-20020, 'Za mala kwota: '|| :NEW.kwota_wp);
+END IF;
+END IF;
+END; 
+
+-- 3)
+CREATE OR REPLACE VIEW tow_kw (Towary, Kwota)
+AS
+SELECT t.nazwa, SUM(t.cena*s.ilosc) FROM towar t JOIN sprzedaz s ON (t.symbol=s.symbol) GROUP BY t.nazwa;
+--select * from tow_kw; 
+
+-- 4)
+UPDATE pracownicy SET placa=(
+SELECT avg(p.placa) FROM pracownicy p JOIN pracownicy s ON (p.kierownik = s.nr_akt)
+WHERE s.nazwisko='KUKULSKI')
+WHERE id_dzialu=30;
+
+- utworzyc tabele kierowcy ( pesel [wymagane], nazwisko, imie, adres), pojazdy (nr_rej, typ [wymagane], cena_za_kilometr, marka, rocznik [samochod nie moze byc starszy niz z 1990r]), przewozy ( nr kursu, ktory kierowca, jaki samochod, ile km, data wyjazdu, data przyjazdu [wartosc data przyjazdu musi byc co najmniej rowna dacie wyjazdu] )
+- wypelnic sensownymi danymi - przewozy wypelniac w 2 etapach: 1. najpierw dane poza data przyjazdu, 2. data przyjazdu (nie wiem jak to zrobic!)
+- stworzyc perspektywe, w ktorej beda same samochody towarowe, ktorych koszt trasy byl wiekszy niz 2500
+- zmienic wlasciwosc tabeli pojazdy aby typ byl tylko osobowy albo towarowy
+- stworzyc wyzwalacz, ktory przed dodaniem pracownika do tabeli [costam, nie pamietam] gdy placa bedzie mniejsza niz 1000 wywali komunikat 
+
+wiecej nie pamietam. znaczy to wszystkie pytania, ale nie bardzo konkretnie. jestem w trakcie piania tego, ale nie wiem co z tym wypelnianiem przewozow reszta [bez wyzwalacza] wyglada tak:
+/* create table Kierowcy (
+pesel number(11) constraint ki_pe_pk primary key,
+nazwisko varchar2(20) not null,
+imie varchar2(20),
+adres varchar2(20) ); */ 
+
+/* create table Pojazdy (
+nr_rej varchar2(8) constraint po_nr_pk primary key,
+typ_poj varchar2(10) not null,
+cena_za_km number(5,2) not null,
+rocznik number(4) check (rocznik>1990) ); */
+--alter table Pojazdy add marka varchar2(10) not null; 
+
+/* create table Przewozy (
+nr_kursu number(3) constraint prz_nr_pk primary key,
+id_kier number(11) references Kierowcy(pesel),
+jaki_sam varchar2(8),
+il_km number(3) check (il_km between 10 and 600),
+data_wyj date,
+data_przyj date,
+constraint prz_dd_ch check (data_wyj<=data_przyj),
+constraint prz_jaki_fk foreign key(jaki_sam) references Pojazdy(nr_rej) ); */ 
+
+--create sequence prz_licz increment by 1 start with 1; 
+
+/* insert into Kierowcy values ('12345678910', 'Kowalski', 'Jan', 'Zamosc');
+insert into Kierowcy values ('12345678911', 'Polaczkiewicz', 'Marian', 'Kielce');
+insert into Kierowcy values ('12345678912', 'Lelek', 'Piotr', 'Torun');
+insert into Kierowcy values ('12345678913', 'Milski', 'Karol', 'Lublin');
+insert into Kierowcy values ('12345678914', 'Pawlak', 'Waldemar', 'Polki'); */ 
+
+/* insert into Pojazdy values ('sc145698', 'OSOBOWY', 5.22, 1998, 'FIAT');
+insert into Pojazdy values ('sg545678', 'TOWAROWY', 7.29, 1991, 'DAEWO');
+insert into Pojazdy values ('lb142341', 'OSOBOWY', 2.99, 1995, 'CITROEN');
+insert into Pojazdy values ('gj545328', 'TOWAROWY', 6.97, 2001, 'RENUALT');
+insert into Pojazdy values ('ka572316', 'OSOBOWY', 4.90, 1992, 'MAZDA'); */ 
+
+--alter table Pojazdy add constraint poj_typ_ch check (typ_poj in('OSOBOWY', 'TOWAROWY') ); 
+
+/* create or replace view poj_towar as select * from pojazdy where typ_poj='TOWAROWY' and 2500<(select (cena_za_km)*(il_km) from pojazdy natural join przewozy where typ_poj='TOWAROWY'); */ 
+
+insert into Przewozy (nr_kursu, id_kier, jaki_sam, il_km, data_wyj) values (prz_licz.nextval, 12345678912, 'sc145698', 540, sysdate);
+update Przewozy set data_przyj=sysdate where nr_kursu=2

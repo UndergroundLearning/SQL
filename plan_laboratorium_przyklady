@@ -1,0 +1,1190 @@
+----------------------------------------------------------------------
+--               LABORATORIUM 1
+----------------------------------------------------------------------
+
+-- 1. Sk³adnia polecenia SELECT
+-- SELECT [DISTINCT] lista_wyrazen
+--   FROM lista_identyfikatorow_tabel
+--   [WHERE warunki]
+--   [GROUP BY kryteria
+--     [HAVING warunki]]
+--   [ORDER BY kryteria [DESC]];
+
+-- 2. Wybierz wszystko z tabeli studenci.
+	select * from studenci;
+
+-- 3. Poka¿ atrybuty tabeli studenci.
+	desc studenci;
+
+-- 4. Wybierz nazwiska i imiona z tabeli studenci.
+	select nazwisko, imiona from studenci;
+
+-- 5. Poka¿ atrybuty tabeli pracownicy.
+	desc pracownicy;
+
+-- 6. Podaj nazwiska pracowników i ich p³acê.
+	select nazwisko, placa from pracownicy;
+
+-- 7. Podaj nazwiska i wartoœæ dniówek pracowników.
+	select nazwisko, placa/20 from pracownicy;
+
+-- 8. Podaj nazwiska i roczn¹ p³acê pracowników.
+	select nazwisko, placa*12 from pracownicy;
+
+-- 9. Dodaj aliasy do poprzednich dwóch zapytañ.
+	select nazwisko, placa/20 as dniowka from pracownicy;
+	select nazwisko, placa*12 as dniowka from pracownicy;
+
+-- 10. Wypisz w postaci jednego ³añcucha nazwisko pracownika i w jakim pracuje dziale.
+	select nazwisko || ' pracuje w dziale nr ' || id_dzialu as "Praca w dziale" from pracownicy;
+
+-- 11. Poka¿, które roczniki studentów wprowadzone s¹ do tabeli studenci (bez powtórzeñ).
+	select distinct rok from studenci;
+
+-- 12. Wyœwietl nazwiska, imiona i rok studentów. Uporz¹dkuj dane wed³ug rocznika, grupy, nazwiska, wed³ug ró¿nych porz¹dków.
+	select nazwisko, imiona, rok from studenci order by rok, gr_dziekan, nazwisko;
+
+-- 13. Wyœwietl dane studentów z roku 3 i grupy 2.
+	select * from studenci where rok=3 and gr_dziekan=2;
+
+-- 14. Wyœwietl dane studentów, którzy nie podali imienia ojca.
+	select * from studenci where imie_ojca is null;
+
+-- 15. Wyœwietl nazwiska, imiona i roczniki studentów z lat: 3, 4, 5 (warunek zbuduj na kilka sposobów).
+	select nazwisko, imiona, rok from studenci where rok=3 or rok=4 or rok=5;
+	select nazwisko, imiona, rok from studenci where rok in(3,4,5);
+	select nazwisko, imiona, rok from studenci where rok between 3 and 5;
+	select nazwisko, imiona, rok from studenci where rok>=3 and rok<=5;
+	select nazwisko, imiona, rok from studenci where rok>2 and rok<6;
+
+-- 16. Wyœwietl imiona i nazwiska studentek znajduj¹cych siê w tabeli student.
+	select nazwisko, imiona from studenci where imiona like '%A';
+
+-- 17. Wyœwietl imiona i nazwiska studentow znajduj¹cych siê w tabeli student.
+	select nazwisko, imiona from studenci where imiona not like '%A';
+
+-- 18. Wyœwietl dane wszystkich Marków, Maciejów i Marcinów.
+	select * from studenci where imiona in('MAREK', 'MACIEJ', 'MARCIN');
+
+-- 19. Wyœwietl marki samochodów ciê¿arowych znajduj¹cych siê w tabeli pojazdy.
+	select distinct marka from pojazdy where typ like '%CIEZ%';
+
+-- 20. Wyœwietl dane OLSZEWSKICH z tablicy studenci.
+	select * from studenci where nazwisko like 'OLSZEWSK_';
+
+-- 21. Wyœwietl imiona studentów, które alfabetycznie mieszcz¹ siê w przedziale alfabetycznym od MA... do NO... .
+	select imiona from studenci where imiona between 'MA%' and 'NO%' order by 1;
+----------------------------------------------------------------------
+--               LABORATORIUM 2
+----------------------------------------------------------------------
+
+-- 1. Ile studentek jest wpisanych do tabeli studenci?
+	select count(*) from studenci where imiona like '%A';
+
+-- 2. Ilu studentów jest wpisanych do tabeli studenci?	
+	select count(*) from studenci where imiona not like '%A';
+
+-- 3. Wyœwietl dane Olszewskich z tablicy studenci.
+	select nazwisko, imiona, rok from studenci where nazwisko like 'OLSZEWSK_';
+
+-- 4. Wykonaj zadanie 3  korzystaj¹c z funkcji Lower().
+	select nazwisko, imiona, rok from studenci where Lower(nazwisko) like 'olszewsk_';
+
+-- 5. Ile jest ró¿nych imion, a ile ogó³em studentów w tablicy studenci?
+	select count(distinct imiona) as "Rozne imiona", count(*) as "Wszyscy" from studenci;
+
+----------------FUNKCJE NA TEKSTACH-----------------------------------
+
+-- 6. Podaj imiona i nazwiska studentów w postaci pojedynczych ³añcuchów. 
+	select imiona || ' ' || nazwisko as "Osoba" from studenci;
+	select Concat(concat(imiona,' '), nazwisko) as "Osoba" from studenci;
+
+-- 7. Wyœwietl pierwsze 3 litery nazwisk studentów z roku 3.
+	select Substr(nazwisko, 1, 3) as "Pierwsze 3" from studenci where rok = 3;
+
+-- 8. Wyœwietl ostatnie 2 litery nazwisk studentów z roku 3.
+	select Substr(nazwisko, -2) as "Ostatnie 2" from studenci where rok = 3;
+  
+-- 9. Wykonaj zadanie 8 korzystaj¹c z funkcji Length().
+	select Substr(nazwisko, Length(nazwisko) - 1) as "Ostatnie 2" from studenci where rok = 3;
+
+-- 10. Wyœwietl nazwiska studentów tak, by pierwsza litera by³a du¿a, a pozosta³e ma³e.
+	select Substr(nazwisko, 1, 1) || Lower(Substr(nazwisko, 2)) from studenci;
+	select Concat(Substr(nazwisko, 1, 1), Lower(Substr(nazwisko, 2))) from studenci;
+
+-- 11. Zademonstruj dzia³anie funkcji Ltrim() i Rtrim().
+	select Ltrim('**345**57**', '*') from dual;
+	select Rtrim('**345**57**', '*') from dual;
+
+-- 12. Wyœwietl te nazwiska studentów z roku trzeciego, których d³ugoœæ przekracza 6 znaków. Uporz¹dkuj wynik od najd³u¿szego nazwiska do najkrótszego i w kolejnoœci alfabetyczej.
+	select nazwisko from studenci where rok = 3 and Length(nazwisko) > 6 order by Length(nazwisko) desc, 1;
+
+-- 13. Zademonstruj dzia³anie funkcji Instr().
+	select Instr('abc345abc910', 'abc', 1, 1) from dual;
+
+-- 14. Wypisz imiona studentów oraz podaj pzycjê, na której w ich imieniu wystêpuje po raz pierwszy litera A. Uporz¹dkuj wed³ug drugiego wyra¿enia.
+	select distinct imiona, Instr(imiona, 'A', 1) as "Pozycja" from studenci where Instr(imiona, 'A', 1) <> 0 order by "Pozycja" desc;
+
+-- 15. Zamieñ koñcówkê nazwiska 'SKA' na 'SKI' u¿ywaj¹c funkcji Replace(), a nastêpnie Trim().
+  	select nazwisko, replace(nazwisko, 'SKA', 'SKI') as "Zamiana" from studenci where nazwisko like '%SKA';
+  	select nazwisko, Trim(Trailing 'A' from nazwisko) || 'I' as "Zamiana" from studenci where nazwisko like '%SKA';
+  
+-- 16. Wykorzystuj¹c funckje Rpad() i Lpad() wypisz nazwiska studentów poprzedzone i zakoñczone piêcioma gwiazdkami.
+  	select rpad(lpad(nazwisko, length(nazwisko) + 5, '*'), length(nazwisko) + 10, '*' ) as "Nazwisko" from studenci;
+  
+-- 17. Wypisz imiona studentów zawiraj¹ce na trzeciej pozycji literê A buduj¹c warunek selekcji na trzy sposoby.
+  	select distinct(imiona) from studenci where imiona like '__A%';
+    	select distinct(imiona) from studenci where substr(imiona, 3, 1) = 'A';
+    	select distinct(imiona) from studenci where instr(imiona, 'A', 3) = 3;
+
+----------------FUNKCJE MATEMATYCZNE--------------------------------
+
+-- 18. Wyœwietl nazwiska, p³acê podstawow¹ i dodatkow¹ pracowników, tam gdzie jej nie ma wpisuj¹c 0.
+  	select nazwisko, nvl(placa, 0) as "Placa", nvl(prowizja, 0) as "Prowizja" from pracownicy;
+  
+-- 19. Podaj sumaryczn¹ p³acê pracowników (zaobserwuj wp³yw wartoœci NULL na wynik).
+  	select nazwisko, nvl(placa, 0) + nvl(prowizja, 0) as "Placa",  placa + prowizja as "Placa 2" from pracownicy;
+  
+-- 20. O jak¹ kwotê odbiegaj¹ zarobki pracowników od œredniej krajowej wynosz¹cej 33215.75 PLN.
+  	select nazwisko, stanowisko, placa * 12 as "Placa", abs(placa * 12-33215.75) as "Odbiega" from pracownicy;
+----------------------------------------------------------------------
+--               LABORATORIUM 3
+----------------------------------------------------------------------
+
+----------------FUNKCJE MATEMATYCZNE--------------------------------
+
+--1. Wyœwietl nazwiska, p³acê podstawow¹ i dodatkow¹ pracowników, tam gdzie jej nie ma wpisuj¹c 0. (Funkcja Nvl)
+    select nazwisko, placa, nvl(dod_funkcyjny, 0) as Dodatek, nvl(prowizja, 0) as Prowizja from pracownicy;
+
+--2. Podaj sumaryczn¹ p³acê (p³aca, dodatki, prowizje) pracowników (zaobserwuj wp³yw wartoœci NULL na wynik).
+    select nazwisko, placa, dod_funkcyjny as Dodatek, prowizja as Prowizja, placa + dod_funkcyjny + prowizja as "DO WYP£ATY 1", placa + nvl(dod_funkcyjny, 0) + nvl(prowizja, 0) as "DO WYP£ATY 2" from pracownicy;
+
+--3. O jak¹ kwotê odbiegaj¹ zarobki pracowników od œredniej krajowej wynosz¹cej 3438.67 PLN?
+    select nazwisko, placa, abs(placa - 3438.67) as "Ro¿nica" from pracownicy;
+
+--4. Zaokr¹gl powy¿szy wynik do 1 miejsca po przecinku u¿ywaj¹c funkcji Round() i Trunc().
+    select nazwisko, placa, abs(placa - 3438.67) as "Ro¿nica", Round(abs(placa - 3438.67), 1) as "Ró¿nica 1", Trunc(abs(placa - 3438.67), 1) as "Ro¿nica 2" from pracownicy;
+
+--5. Zaokr¹gl powy¿szy wynik do dziesi¹tek u¿ywaj¹c funkcji Round() i Trunc().
+    select nazwisko, placa, abs(placa - 3438.67) as "Ro¿nica", Round(abs(placa - 3438.67), -1) as "Ró¿nica 1", Trunc(abs(placa - 3438.67), -1) as "Ro¿nica 2" from pracownicy;
+
+--6. Wylicz wartoœæ wyra¿enia 123.34*16, wylicz z niego pierwiastek, a nastepnie przetestuj na nim dzia³anie funkcji Sqrt, Round, Trunc, Ceil i Floor (Wykorzystaj tabelê dual).
+    select 123.34*16 as Wynik, sqrt(123.34*16) as pierwiastek, round(sqrt(123.34*16), 2) as zaokr¹glenie, trunc(sqrt(123.34*16), 1) as obciecie, ceil(sqrt(123.34*16)) as sufit, floor(sqrt(123.34*16)) as podloga from dual;
+
+----------------FUNKCJE OPERUJACE NA DATACH-------------------------
+
+--W poleceniach nie dotycz¹cych ¿adnej konkretnej tabeli wykorzystaj
+--tabelê dual. Wartoœci dla przedzia³ów i znaczników czasowych
+--wpisuj w apostrofach. Pamietaj o kolejnoœci i separatorach zapisu
+--'YYYY-MM-DD HH:MI:SS.p'
+
+--7. Wyœwietl aktualn¹ datê i czas.
+    select current_date, current_timestamp, sysdate, systimestamp from dual;
+
+-- 8. Wyœwietl przedzia³ 10 lat i 10 miesiêcy; 10 dni, 10 godzin, 10 minut, 10 sekund i 10/100 sekundy; oraz znacznik czasowy obejmuj¹cy ³¹cznie oba te przedzia³y (Wykorzystaj INTERVAL oraz TIMESTAMP).
+    select interval '10-10' year to month from dual;
+    select interval '10 10:10:10.1' day to second from dual;
+
+-- 9. Jaka data bêdzie za 100 dni, a jaka by³a 100 dni temu?
+    select current_date+100, current_date-100, sysdate+100, sysdate-100 from dual;
+
+-- 10. Jaka data bêdzie za 10 lat, 10 miesiêcy, 10 lat i 10 miesiêcy? (tym razem dodaj przedzia³).
+    select sysdate as "Dzisiaj", Add_months(sysdate, 10) as "Za 10 miesiecy", sysdate + interval '10' year as "10 lat", sysdate + interval '10-10' year to month as "Za 10 miesiecy i 10 lat" from dual;
+
+-- 11. Wyœwietl datê i czas jaki bêdzie za 10 dni, 10 godzin i 10 minut (SYSTIMESTAMP i INTERVAL).
+    select systimestamp, systimestamp + interval '10 10:10' day to minute from dual;
+
+-- 12. Wyœwietl przedzia³ czasowy wystêpuj¹cy pomiêdzy dwoma znacznikami czasowymi (TIMESTAMP). Przedzia³ dni do sekund i przedzial lat do miesiecy.
+    select timestamp '11-11-11 11:11:11.11' - timestamp '10-10-10 10:10:10.10' from dual;
+    select (timestamp '11-11-11 11:11:11.11' - timestamp '10-10-10 10:10:10.10') year to month from dual;
+
+-- 13. Wyœwietl aktualny rok i aktualn¹ sekundê. (Extract)
+    select extract(year from sysdate), extract(second from systimestamp) from dual;
+
+-- 14. Jaka data bêdzie za 7 miesiêcy? (Add_months)
+    select add_months(sysdate, 7) from dual;
+
+-- 15. Jaki bêdzie ostatni dzieñ tego miesi¹ca? (Last_day)
+    select last_day(sysdate) from dual;
+
+-- 16. Obetnij i zaokr¹gl aktualn¹ datê, co do miesiêcy. (Trunc, Round)
+    select sysdate, round(sysdate, 'MM') as "ROUND", trunc(sysdate, 'MM') as "TRUNC" from dual;
+
+-- 17. Wyœwietl nazwisko, imiê oraz wiek studentów z roku 3, grupy 2, porz¹dkuj¹c dane wed³ug wieku i nazwisk. (Months_between)
+    select nazwisko, imiona, trunc(Months_between(sysdate, data_urodzenia)/12) as "WIEK" from studenci where rok = 3 and gr_dziekan = 2 order by 3, 1;
+ 
+---------------FUNKCJE KONWERTUJACE---------------------------------
+
+-- 18. Konwertuj aktualny znacznik czasowy do daty. (Cast)
+    Select Cast(systimestamp as date) as "DATA" from dual;
+
+-- 19. Konwertuj konkatenacjê ³añcuchów '12' i '123' na liczbê i odejmij od niej 1. W nastêpnych zadaniach wykorzystaj funkcjê To_char z odpowiednimi maskami wpisywanymi w apostrofach.
+    select to_number('12' || '123') - 1 from dual;
+
+-- 20. Wyœwietl napis '12 malp' u¿ywaj¹c cyfr rzymskich. 
+    select Trim(to_char(12, 'RM') || ' ' || 'ma³p') as "DWANAŒCIE MA£P" from dual;
+
+-- 21. Wyœwietl datê w innym formacie ni¿ domyœlny (zmieñ separatory, miesi¹ce na liczby rzymskie itp.) 
+    select to_char(sysdate, 'DD-') || Trim(to_char(sysdate, 'RM')) || to_char(sysdate, '-YY') as "DATA" from dual;
+
+-- 22. Wyœwietl aktualne stulecie.
+    select to_char(sysdate, 'CC') as wiek from dual;
+
+-- 23. Wyœwietl aktualne stulecie cyframi rzymskimi.
+    select to_char(to_char(sysdate, 'CC'), 'RM') as wiek from dual;
+
+-- 24. Wyswietl dzisiejsz¹ datê w postaci: œroda, 14 marzec 2012 roku.
+    select to_char(sysdate, 'day, dd month yyyy') from dual;
+
+-- 25. Wyœwietl jaki dzieñ tygodnia bêdzie ostatniego dnia tego miesi¹ca. 
+    select to_char(last_day(sysdate), 'Day') as "Ostatni dzieñ miesiaca" from dual;
+ 
+-- 26. Wyœwietl ile miesiêcy mine³o od '20-01-04'.
+    select trunc(months_between(sysdate, to_date('2004-01-20', 'YYYY-MM-DD'))) as "Ile minelo" from dual;
+
+-- 27. Wyœwietl jaki dzieñ tygodnia i który kwarta³ roku by³ '1-09-1939'.
+    select to_char(to_date('1939-09-01', 'YYYY-MM-DD'), 'Day, Q') as "Dzieñ tygodnia, kwartal" from dual;
+
+-- 28. Podaj Ilu studentów urodzi³o siê w niedzielê.
+    select count(*) as "W niedziele" from studenci where Trim(to_char(data_urodzenia, 'Day')) = 'Niedziela';
+	
+--------------POZOSTALE FUNKCJE---------------------------------------  
+
+-- 29. Wyœwietl nazwiska, stanowiska, place podstawow¹ oraz dodatkow¹ pracowników, je¿eli któs nie otrzymuje dodatku wyœwietl 0. U¿yj funkcji Nvl oraz Decode.
+    select nazwisko, stanowisko, placa, nvl(dod_funkcyjny, 0) as "DODATEK FUNKCYJNY", decode(prowizja, null, 0) from pracownicy;
+
+-- 30. Wyœwietl nazwê i identyfikator swojego konta. (User, Uid)
+    select user, uid from dual; 
+----------------------------------------------------------------------
+--               LABORATORIUM 4
+----------------------------------------------------------------------
+
+--------------POZOSTALE FUNKCJE---------------------------------------  
+
+--1. Wyœwietl nazwiska, stanowiska, place podstawow¹ oraz dodatkow¹ pracowników, je¿eli któs nie otrzymuje dodatku wyœwietl 0. U¿yj funkcji nvl oraz Decode.
+    select nazwisko, stanowisko, placa, nvl(dod_funkcyjny, 0) as "DODATEK FUNKCYJNY", decode(prowizja, null, 0) from pracownicy;
+
+--2. Wyœwietl nazwê i identyfikator swojego konta.
+    select user, uid from dual; 
+
+-------------------GRUPOWANIE I FUNKCJE AGREGUJACE-------------------
+
+--3. Podaj ilu studentów jest wpisanych do bazy.
+    select count(*) from studenci;
+
+--4. Ile wynosi minimalna placa w tabeli pracownicy?
+    select min(placa) from pracownicy;
+
+--5. Podaj ilu studentów jest wpisanych do bazy z ka¿dego roku studiów.
+    select rok, count(*) from studenci group by rok order by rok;
+
+--6. Podaj ilu pracowników pracuje w ka¿dym dziale.
+    select id_dzialu, count(*) as ilosc from pracownicy group by id_dzialu order by ilosc desc;
+
+--7. Podaj ilu studentów na ka¿dym roku urodzi³o siê w maju.
+    select rok, count(*) as "Ilosc urodzonych w maju" from studenci where trim(to_char(data_urodzenia, 'Month')) = 'Maj' group by rok;
+
+--8. Podaj ile nazwisk studentów zaczyna siê na poszczególne litery alfabetu
+    select substr(nazwisko,1,1), count(*) from studenci group by substr(nazwisko,1,1) order by 2 desc;
+  
+--9. Podaj daty urodzenia najstarszych studentów z ka¿dego roku.
+    select rok, min(data_urodzenia) from studenci group by rok;
+  
+--10. Ilu studentów urodzi³o siê ka¿dego dnia tygodnia?
+    select to_char(data_urodzenia, 'Day'),count(*) from studenci group by to_char(data_urodzenia, 'Day') order by 2 desc;
+
+--11. Ile wynosi najd³u¿sza d³ugoœæ nazwiska na ka¿dym roku?
+    select rok, max(Length(nazwisko)) from studenci group by rok;
+  
+--12. Ile pieniêdzy ka¿dy dzia³ wydaje miesiêcznie na pracowników.?
+    select id_dzialu, sum(placa) + sum(nvl(dod_funkcyjny, 0)) + sum(nvl(prowizja, 0)) from pracownicy group by id_dzialu;
+
+--13. Podaj typy samochodów oraz ich maksymaln¹, œredni¹ i minimaln¹ pojemnoœæ, ale tylko dla tych typów, których œrednia pojemnoœæ jest wiêksza od 1500.  
+    select typ, max(pojemnosc), avg(pojemnosc), min(pojemnosc) from pojazdy group by typ having avg(pojemnosc) > 1500;
+
+--14. Podaj liczebnoœæ poszczególnych grup dziekañskich na ka¿dym roku studiów, na kierunku informatyka, ogranicz wyœwietlane wyniki do grup posiadaj¹cych powy¿ej 30 studentów.
+    select rok, gr_dziekan, count(*) from studenci where kierunek = 'Informatyka' group by rok, gr_dziekan having count(*) > 30 order by 1, 2;
+
+--15. Ile jest samochodów ka¿dej marki w ka¿dym typie?
+    select typ, marka, count(*) from pojazdy group by typ, marka;
+  
+--16. Podaj ilu studentów urodzi³o siê ka¿dego roku, w ka¿dym miesi¹cu.
+    select extract(year from data_urodzenia), extract(month from data_urodzenia), count(*) from studenci group by extract(year from data_urodzenia), extract(month from data_urodzenia) order by 1, 2;
+  
+--17. Ilu pracowników zatrudnia ka¿dy dzia³, na ka¿dym etacie?
+    select id_dzialu, stanowisko, count(*) from pracownicy group by id_dzialu, stanowisko oreder by 1, 2;
+
+--18. Znajdz minimaln¹ sumê p³ac pracowników w poszczególnych dzia³ach.
+    select id_dzialu, min(placa + nvl(dod_funkcyjny, 0) + nvl(prowizja, 0)) as minimalna from pracownicy group by id_dzialu order by 1;
+
+--------------ROZSZERZENIE GRUPOWANIA----------------------------------
+
+--19. Ilu jest studentów na ka¿dym roku, w ka¿dej grupie? U¿yj rozszerzeñ grupowania: Rollup, Cube, Grouping Sets.
+    select rok, gr_dziekan, count(*) from studenci group by rollup(rok, gr_dziekan) order by rok, gr_dziekan;
+    select rok, gr_dziekan, count(*) from studenci group by cube(rok, gr_dziekan) order by rok, gr_dziekan;
+    select rok, gr_dziekan, count(*) from studenci group by grouping sets(rok, gr_dziekan) order by rok, gr_dziekan;
+
+--20. Do powy¿szego zapytania u¿yj funkcji Grouping by pokazaæ, który atrybut zosta³ "zwiniêty".
+    select grouping(rok), rok, grouping(gr_dziekan), gr_dziekan, count(*) from studenci group by grouping(rok), rok, grouping(gr_dziekan), gr_dziekan;
+
+--21. U¿ywaj¹c Grouping Sets oraz funckji Decode i Grouping, utwórz zestawienie liczebnoœci grup  dziekañskich, lat oraz wszystkich studentów, w miejsca pustych pól wstawiaj¹c odpowiednie konmentarze "wszystkie lata", "wszystkie grupy".
+    select grouping(rok), grouping(gr_dziekan),  count(*) from studenci group by grouping sets ((rok, gr_dziekan), ());
+----------------------------------------------------------------------
+--               LABORATORIUM 5
+----------------------------------------------------------------------
+
+-------------------OPERATORY ZBIOROWE-----------------------------------
+
+-----------------------SUMA-----------------------------------------------
+
+--1.  Wybierz nazwisko i place pracownika, oraz dodaj komentarz, czy pracownik zarabia powyzej, ponizej czy rowno z srednia krajowa, (ponownie z operatorem CASE).
+    select nazwisko, placa, 'Ponizej 2000' as Prog from pracownicy where placa < 2000 union
+select nazwisko, placa, 'Rowno 2000' from pracownicy where placa = 2000 union
+select nazwisko, placa, 'Powyzej 2000' from pracownicy where placa > 2000 order by 2;
+
+    select nazwisko, placa,
+case
+when placa < 2000 then 'Ponizej 2000'
+when placa = 2000 then 'Rowno 2000'
+when placa > 2000 then 'Powyzej 2000'
+end as Prog
+from pracownicy order by 2;
+
+---------------------ROZNICA---------------------------------------------
+
+--2. Podaj identyfikator dzialu, ktory nie zatrudnia pracownikow.
+    select id_dzialu from dzialy minus select id_dzialu from pracownicy;
+
+--------------------PRZECIECIE-----------------------------------------
+
+--3. Podaj wspolne stanowiska dla dzialu 20 i 30.
+    select stanowisko from pracownicy where id_dzialu = 20 intersect select stanowisko from pracownicy where id_dzialu = 30;
+
+---------------------------ZLACZENIA------------------------------------
+
+DESC dzialy;
+DESC stanowiska;
+SELECT * FROM pracownicy;
+SELECT * FROM dzialy;
+SELECT * FROM stanowiska;
+
+-----------------------ILOCZYN KARTEZJANSKI-----------------------------
+
+--4. Dokonaj z³¹czenia na tablicach dzaily i pracownicy.
+    select * from dzialy cross join pracownicy;
+
+-----------------------ZLACZENIA ROWNOSCIOWE-----------------------
+
+--5. Dokonaj ponownego z³¹czenia tym razem dla warunku równoœci pól przechowuj¹cych identyfikator dzia³u.
+    select * from pracownicy, dzialy where (pracownicy.id_dzialu = dzialy.id_dzialu);
+
+--6. Wypisz pracowników, nazwy dzia³ów w jakich pracuj¹, oraz jakie s¹ siedziby ich zespo³ów.
+    select nazwisko,nazwa,siedziba,id_dzialu from pracownicy join dzialy using(id_dzialu);
+
+--7. Podaj nazwy dzia³ów oraz ilu pracowników w nich pracuje.
+    select nazwa, p.id_dzialu, count(*) from pracownicy p join dzialy d on(p.id_dzialu=d.id_dzialu) group by nazwa, p.id_dzialu;
+    select nazwa, id_dzialu, liczba from dzialy join (select id_dzialu, count(*) as liczba from pracownicy group by id_dzialu) using(id_dzialu);
+    select nazwa, d.id_dzialu, liczba from dzialy d join (select id_dzialu,count(*) as liczba from pracownicy group by id_dzialu) p on(d.id_dzialu = p.id_dzialu);
+
+--8. Podaj identyfikatory i nazwy dzia³ów oraz kwotê jak¹ miesiêcznie poœwiêcaj¹ na wszystkie p³ace.
+    select id_dzialu, nazwa, sum(placa + nvl(dod_funkcyjny, 0) + nvl(prowizja, 0)) as suma from pracownicy join dzialy using(id_dzialu)group by id_dzialu, nazwa;
+    select id_dzialu, nazwa, kwota from dzialy join(select id_dzialu, sum(placa + nvl(dod_funkcyjny, 0) + nvl(prowizja, 0)) as kwota from pracownicy group by id_dzialu) using(id_dzialu);
+    select d.id_dzialu, nazwa, kwota from dzialy d join(select id_dzialu, sum(placa + nvl(dod_funkcyjny, 0) + nvl(prowizja, 0)) as kwota from pracownicy group by id_dzialu) p on(d.id_dzialu = p.id_dzialu);
+
+-----------------------ZLACZENIE NATURALNE------------------------------
+
+--9. Wyœwietl wszytskie dane z tablic pracownicy i dzia³y wykorzystuj¹c z³¹czenie naturalne.
+    select * from pracownicy natural join dzialy; 
+
+--10. Wyœwietl nazwy i minimalne p³ace w dzia³ach (wykorzystaj z³¹czenie naturalne).
+    select nazwa, placa_min from dzialy natural join stanowiska; 
+
+-----------------------ZLACZENIA ZEWNETRZNE---------------------------
+
+--11. Wyœwietl nazwiska pracowników, w jakich dzia³ach pracuj¹ i na jakich stanowiskach. Przetestuj na zapytaniu z³¹czenia zewnêtrzne.
+    select nazwisko, nazwa, stanowisko from pracownicy p join dzialy d on(p.id_dzialu=d.id_dzialu);
+    select nazwisko, nazwa, stanowisko from pracownicy p right join dzialy d on(p.id_dzialu=d.id_dzialu);
+    select nazwisko, nazwa, stanowisko from pracownicy p left join dzialy d on(p.id_dzialu=d.id_dzialu);
+
+-----------------------ZLACZENIA NIEROWNOSCIOWE-------------------------
+
+--12. Wyœwietl nazwiska pracowników ich stanowiska i place, oraz w jakich widelkach placowych innych stanowisk miesci sie ich placa. 
+    select nazwisko, stanowisko, placa, kategoria from pracownicy, taryfikator where (placa between od and do);
+    select nazwisko, stanowisko, placa, kategoria from pracownicy p join taryfikator t on (p.placa between t.od and t.do);
+
+-----------------------SAMOZLACZENIE------------------------------------
+
+--13. Wyœwietl nazwiska pracowników, a obok nazwiska ich kierowników.
+    select p.nazwisko, d.nazwisko as kierownik from pracownicy p join pracownicy d on(p.kierownik = d.nr_akt);
+
+--14. Do powy¿szego zapytania do³¹cz tak¿e tych, którzy nie maj¹ szefów.
+    select p.nazwisko, d.nazwisko as kierownik from pracownicy p left join pracownicy d on(p.kierownik = d.nr_akt);
+
+--------------------ZLACZENIA WIELU TABEL---------------------------------
+
+--15. Podaj nazwiska, nazwe dzialu, place, oraz minimalna i maksymalna place jaka moze zarobic pracownik na swoim stanowisku, jednak¿e tylko dla tych stanowisk, dla których p³aca minimalna jest wiêksza ni¿ 1500PLN, a p³aca maksymalna mniejsza ni¿ 3500PLN.
+    select nazwisko, nazwa, placa, placa_min, placa_max from pracownicy natural join dzialy natural join stanowiska where placa_min > 1500 and placa_max < 3500;
+----------------------------------------------------------------------
+--               LABORATORIUM 6
+----------------------------------------------------------------------
+
+-------------------PODZAPYTANIA-------------------------------------------
+
+--------------- na liscie wyrazen-----------------------------------------
+
+--1. Podaj nazwisko pracownika, jego place, oraz ile wynosi roznica miedzy jego placa a srednia placa w firmie.
+    select nazwisko, placa, abs(round((select avg(placa) from pracownicy) - placa, 2)) from pracownicy;
+    
+--2. Ile lat minelo miedzy zatrudnieniem pierwszego i ostatniego pracownika.
+    select trunc(months_between((select max(data_zatr) from pracownicy), (select min(data_zatr) from pracownicy)) / 12) from dual;
+
+-------------- w klauzuli FROM -------------------------------------------
+
+--3. Podaj nazwiska pracowników i œredni¹ p³acê w ich dzia³ach.
+    select nazwisko, srednia from pracownicy natural join (select id_dzialu, round(avg(placa),2) as srednia from pracownicy group by id_dzialu);
+
+-------------- w klauzuli WHERE ------------------------------------------
+
+--4. Podaj nazwisko, stanowisko i p³acê pracownika, który zarabia najmniej.
+    select nazwisko, stanowisko, placa from pracownicy where placa = (select min(placa) from pracownicy);
+    
+--5. Podaj nazwiska, stanowiska i p³ace pracowników, którzy zarabiaj¹ poni¿ej œredniej w firmie.
+    select nazwisko, stanowisko, placa from pracownicy where placa < (select avg(placa) from pracownicy);
+    
+--6. Wypisz dane osób z grupy studenta o nazwisku podanym parametrem.	
+    select * from studenci where gr_dziekan = (select gr_dziekan from studenci where nazwisko like '&nazwisko');
+    
+--7. Podaj nazwiska i p³ace pracowników, którzy zarabiaj¹ wiêcej ni¿ którykolwiek pracownik z dzia³u 30.
+    select nazwisko, placa from pracownicy where placa > (select min(placa) from pracownicy where id_dzialu = 30);
+    
+--8.  Podaj nazwiska i p³ace pracowników, którzy zarabiaj¹ wiêcej ni¿ wszyscy pracownicy z zespo³u 30.
+    select nazwisko, placa from pracownicy where placa > (select max(placa) from pracownicy where id_dzialu = 30);
+    
+--9.  Wyœwietl nazwiska, datê zatrudnienia oraz numery dzia³ów pracowników najd³u¿ej pracuj¹cych w ka¿dym dziale. Wynik uporz¹dkuj wed³ug numerów dzia³ów.
+    select nazwisko, data_zatr, id_dzialu from pracownicy where data_zatr in (select min(data_zatr) from pracownicy group by id_dzialu) order by 3;
+    
+-------------- w klauzuli HAVING -----------------------------------------
+
+--10. Który rok jest najliczniejszy pod wzglêdem liczby kobiet?
+    select rok, count(*) from studenci where imiona like '%A' group by rok having count(*) = (select max(count(*)) from studenci where imiona like '%A' group by rok);
+    
+--11. W którym kwartale zatrudniono najwiêcej pracowników?
+    select to_char(data_zatr, 'Q'), count(*) from pracownicy group by to_char(data_zatr, 'Q') having count(*) = (select max(count(*)) from pracownicy group by to_char(data_zatr, 'Q'));
+    
+--12. Od jakiej litery najczêœciej rozpoczynaj¹ siê imiona studentów.
+    select substr(imiona, 1, 1), count(*) from studenci group by substr(imiona, 1, 1) having count(*) = (select max(count(*)) from studenci group by substr(imiona, 1, 1));
+
+--13.  Podaj identyfikator i nazwê dzia³u, który wydaje najwiêcej na p³ace.
+    select id_dzialu, nazwa from dzialy group by id_dzialu, nazwa having id_dzialu = (select id_dzialu from pracownicy group by id_dzialu having max(placa) = (select max(max(placa)) from pracownicy group by id_dzialu));
+    
+-----------------PODZAPYTANIA SKORELOWANE------------------------------------
+
+--14. Wypisz identyfikator dzia³u, nazwisko i p³acê pracowników, którzy zarabiaj¹ wiêcej ni¿ wynosi œrednia p³aca w ich dziale.
+    select id_dzialu, nazwisko, placa from pracownicy p where placa > (select avg(placa) from pracownicy p2 where p.id_dzialu = p2.id_dzialu);
+
+--15. Wypisz nazwê dzia³u i œredni¹ p³acê dla jego pracowników.
+    select nazwa, (select avg(placa) from pracownicy p where p.id_dzialu = d.id_dzialu) from dzialy d;
+    
+--16. Wypisz nazwiska, stanowiska, place, staz pracy oraz nazwe dzialu, pracownikow, ktorzy w danym dziale zarabiaja najmniej.
+    select nazwisko, stanowisko, placa, Trunc(Months_between(Sysdate, data_zatr)/12) as "staz pracy", nazwa from pracownicy p join dzialy d on(p.id_dzialu = d.id_dzialu) where placa = (select min(placa) from pracownicy where p.id_dzialu = id_dzialu);
+
+--17. Podaj nazwiska szefów.
+    select nazwisko from pracownicy p where exists (select * from pracownicy where kierownik = p.nr_akt);
+
+--18. Podaj identyfikator i nazwê dzia³u, który nie zatrudnia pracowników.
+    select id_dzialu, nazwa from dzialy d where not exists (select id_dzialu from pracownicy where d.id_dzialu = id_dzialu);
+
+--19. Wypisz nazwiska studentow, ktore sie powtarzaja
+    select nazwisko from studenci s where 1 < (select count(*) from studenci where nazwisko = s.nazwisko);
+
+--20.  Wypisz wszystkich pracownikow oprocz tego, ktory zarabia najmniej    
+    select nazwisko, placa from pracownicy p where 1 < (select count(placa) from pracownicy where placa <= p.placa);
+------------------------------------------------------------------------
+--                          LABORATORIUM 7
+------------------------------------------------------------------------
+
+---------------------------------MIX----------------------------------  
+
+--1. Dla ka¿dego pracownika wyœwietl zdanie "Xxxx pracuje na stanowisku: yyyy", gdzie Xxxx to nazwisko pracownika pisane z du¿ej litery, zaœ yyyy to jego stanowisko pisane malymi literami. Otrzymanemu polu nadaj alias opis.
+    select upper(substr(nazwisko, 1, 1)) || lower(substr(nazwisko, 2)) || ' pracuje na stanowisku: ' || lower(stanowisko) as opis from pracownicy;
+
+--2. Wyœwietl nazwisko pracownika i jego roczny dochód, uwzgledniaj¹c dodatki i prowizje. 
+    select nazwisko, (placa + nvl(dod_funkcyjny, 0) + nvl(prowizja, 0))*12 as roczny from pracownicy;
+
+--3. Wyœwietl nazwiska pracowników oraz identyfikatory dzia³ów, dla których dodatek funkcyjny jest wy¿szy ni¿ dziesi¹ta czêœæ ich p³acy podstawowej.
+    select nazwisko, id_dzialu from pracownicy where nvl(dod_funkcyjny, 0) > placa/10;
+
+--4. Wyœwietl nazwiska pracowników oraz ile dni minê³o od ich zatrudnienia, a tak¿e przedzia³ czasowy (lata i miesiace) pokazuj¹cy ile pracuje dany pracownik.
+    select nazwisko, trunc(sysdate - data_zatr) as dni from pracownicy; 		--brakuje przedzialu;
+
+--5. Czy któryœ z pracowników zosta³ zatrudniony w niedzielê?
+    select nazwisko from pracownicy where to_char(data_zatr, 'D') = 7;
+
+--6. Ilu studentów z Twojej grupy zosta³o wpisanych do bazy?
+    select count(*) from studenci where gr_dziekan = 1;
+
+--7. Ilu studentów nosi to samo imiê co ojciec?
+    select count(*) from studenci where imiona = imie_ojca;
+
+--8. Wyœwietl nazwisko pracownika, datê jego zatrudnienia w formacie 'dzieñ tygodnia, dzieñ miesi¹c rok' oraz p³acê w formacie czterech cyfr przed przecinkiem i dwóch po przecinku. U¿yj odpowiednich aliasów.
+   select nazwisko, trim(to_char(data_zatr, 'Day')) || to_char(data_zatr, ', DD MM YYYY') as zatrudniony, to_char(placa, '9999.99') as placa from pracownicy; 
+
+--9. Wyœwietl nazwiska pracowników, a obok wygenerowany dla nich identyfikator sk³adaj¹cy siê z identyfikatora dzia³u, dwóch liter nazwiska oraz dwóch liter stanowiska, polu nadaj alias ID.
+   select nazwisko, id_dzialu || substr(nazwisko, 1, 2) || substr(stanowisko, 1, 2) as "ID" from pracownicy; 
+
+--10. Podaj uporz¹dkowane numery dzia³ów oraz ile wynosi w ka¿dym z nich œrednia p³aca, zaokr¹gl wynik do drugiego miejsca po przecinku.
+   select id_dzialu, to_char(round(avg(placa), 2), '9999.99') as srednia from pracownicy group by id_dzialu order by 1;
+
+--11. Podaj minimaln¹ i maksymaln¹ p³acê pracowników, oraz ró¿nicê miêdzy nimi.
+    select max(placa), min(placa), max(placa)-min(placa) from pracownicy;
+
+--12. Wyœwietl identyfikatory dzia³ów, które zatrudniaj¹ wiêcej ni¿ trzech pracowników. Pomiñ pracowników bez przydzia³u. Wynik uporz¹dkuj wg malej¹cej liczby pracowników.
+    select id_dzialu from pracownicy where id_dzialu is not null group by id_dzialu having count(*) > 3 order by count(*) desc;
+
+--13. Wyœwietl œrednie pensje w ramach poszczególnych stanowisk i liczbê pracowników zatrudnionych na danym stanowisku. Uwzglêdnij tylko tych pracowników, którzy zostali zatrudnieni od 1990 roku.
+    select stanowisko, avg(placa), count(*) from pracownicy where data_zatr > to_date('01-01-1990', 'DD-MM-YYYY') group by stanowisko;
+
+--14. Dla ka¿dego kierownika wyœwietl pensjê najgorzej zarabiaj¹cego podw³adnego oraz ilu ma pod sob¹ podw³adnych. Wynik uporz¹dkuj wed³ug malej¹cej p³acy. 
+    select k.nazwisko, count(*), min(p.placa) from pracownicy p join pracownicy k on (p.kierownik = k.nr_akt) group by k.nazwisko order by 3 desc;
+
+--15. SprawdŸ, które nazwiska na liœcie studentów siê powtarzaj¹ i ile razy.
+    select nazwisko, count(*) from studenci group by nazwisko having count(*) > 2;
+
+--16. Podaj ile jest kobiet na ka¿dym roku studiów, pomiñ dane nie zawieraj¹ce roku, wynik uporz¹dkuj wed³ug malej¹cej liczby studentek.
+    select rok, count(*) from studenci where imiona like '%A' and rok is not null group by rok order by 2 desc;
+
+--17. Wyœwietl ile jest sztuk samochodów osobowych w ka¿dym kolorze. Pomiñ kolor 'NIEUSTALONY'. Wyœwietl tylko te kolory, w których wystêpuje wiêcej ni¿ sto samochodów, uporz¹dkuj wynik wed³ug malej¹cej liczebnoœci.
+    select kolor, count(*) from pojazdy where kolor != 'NIEUSTALONY' and typ = 'SAM.OSOBOWY' group by kolor having count(*) > 100;
+
+--18.Wyswietl wszystkie kombinacje imion zaczynajacych sie na litere 'E' z imionami zaczynajacymi sie na litere 'W'.
+    select distinct(imiona) from studenci where substr(imiona, 1, 1) = 'E' or substr(imiona, 1, 1) = 'W';
+
+--19.Na jakich stanowiskach zatrudniaja pracowników poszczególne dzia³y (podaj nazwy stanowisk i nazwy dzialow)?
+    select nazwa, stanowisko from dzialy join pracownicy using(id_dzialu);
+
+--20.Wyswietl nazwiska pracownikow i na ktorym poziomie taryfikatora miesci sie ich placa.
+    select nazwisko, kategoria from pracownicy join taryfikator on (placa between od and do);
+
+--21. Ilu ka¿dy z szefów ma podw³adnych.
+    select s.nazwisko, count(*) from pracownicy p join pracownicy s on (p.kierownik = s.nr_akt) group by s.nazwisko;
+
+--22. Podaj dane najm³odszego studenta.
+    select * from studenci where data_urodzenia = (select max(data_urodzenia) from studenci) order by data_urodzenia;
+
+--23. Podaj nazwisko dyrektora, który zosta³ zatrudniony najpozniej spoœród dyrektorów.
+    select nazwisko from pracownicy where stanowisko = 'DYREKTOR' and data_zatr = (select max(data_zatr) from pracownicy where stanowisko = 'DYREKTOR');
+
+--24. Wyswietl identyfikator dzialu, nazwisko pracownika, place i kwote o jaka odbiega jego placa od sredniej placy w zespole (z dokladnoscia do dwoch miejsc po przecinku), wynik uporzadkuj wedlug identyfikatora dzialu i odchylki od sredniej.
+    select id_dzialu, nazwisko, placa, srednia - placa from pracownicy natural join (select id_dzialu, round(avg(placa), 2) as srednia from pracownicy group by id_dzialu) order by 1, 4; 
+
+--25.  Wypisz nazwiska, imiona i rok studentów, których imiê ma œredni¹ d³ugoœæ.
+    select nazwisko, imiona, rok from studenci where length(nazwisko) = (select round(avg(length(nazwisko))) from studenci);
+
+--26. Jakiego koloru auta osobowe najchetniej kupuja wlasciciele o imieniu Marianna (kolor nie moze byc nieustalony).
+    select kolor, count(*) from pojazdy join kierowcy on (wlasciciel = id_kier) where kolor != 'NIEUSTALONY' and typ = 'SAM.OSOBOWY' and imie = 'MARIANNA' group by kolor having count(*) = (select max(count(*)) from pojazdy join kierowcy on (wlasciciel = id_kier) where kolor != 'NIEUSTALONY' and typ = 'SAM.OSOBOWY' and imie = 'MARIANNA' group by kolor);
+
+insert into pracownicy values (9781, 'PARMOWSKI', 'AKWIZYTOR', 9235, sysdate, null, 1150, null, null, 70);
+insert into pracownicy values (9782, 'CIESZKOWSKI', 'LABORANT', 9332, sysdate + 12, null, 1200, null, null, null);
+insert into pracownicy (nr_akt, nazwisko, stanowisko, data_zatr, placa) values (9783, 'BIDULA', 'PRAKTYKANT', sysdate, (select placa_min from stanowiska where stanowisko='PRAKTYKANT'));
+insert into stanowiska (stanowisko, placa_min, placa_max) (select 'G£ÓWNY' || stanowisko, placa_min + 500, placa_max + 1000 from stanowiska where stanowisko in ('TECHNOLOG', 'LOGISTYK', 'OPERATOR'));
+rollback;
+update pracownicy set stanowisko = 'LABORANT', placa = placa * 1.1, id_dzialu = 50 where nr_akt = 9780;
+update pracownicy set dod_funkcyjny = nvl(dod_funkcyjny,0) + 0.1 * (select min(placa) from pracownicy) where nr_akt in (select distinct kierownik from pracownicy);
+delete from pracownicy where nr_akt = 9780;
+delete from pracownicy where stanowisko = 'LOGISTYK' and data_zatr = (select max(data_zatr) from pracownicy where stanowisko='LOGISTYK');
+create table lista_plac(nr_akt,nazwisko,placa) as select nr_akt, nazwisko, placa+nvl(dod_funkcyjny,0)+nvl(prowizja,0) from pracownicy;
+select * from cat;
+alter table lista_plac add constraint lista_nr_pk primary key (nr_akt);
+select * from user_constraints;
+
+create table projekty(
+  id_projektu number(5) constraint projekt_id_u unique,
+  nazwa varchar2(100),
+  budzet numeric(10,2),
+  termin_zak date,
+  szef constraint projekt_szef_fk references pracownicy(nr_akt)
+  --szef number(4) constraint proj_nr_fk references pracownicy(nr_akt)
+  --szef number(4), constraint projekt_szef_fk foreign key (szef) references pracownicy(nr_akt)
+);
+----------------------------------------------------------------------
+--               LABORATORIUM TRANSAKCJI
+----------------------------------------------------------------------
+
+--------------------------WSPOLBIEZNOSC-------------------------------
+
+-- Transakcja - zespol operacji w bazie danych charakteryzujacych sie
+-- atomowoscia, spojnoscia, izolacja i trwaloscia.
+-- Transakcje mozemy rozpoczac poprzez rozpoczecie nowej sesji lub zakonczenie 
+-- poprzedniej transakcji.
+-- Transakcje mozemy zakonczyc jawnie lub niejawnie. Jawnie - przez polecenia 
+-- COMMIT (zatwierdzenie) lub ROLLBACK (wycofanie), niejawnie - poprzez 
+-- zakonczenie sesji lub wykonanie polecen DDL lub DCL (zatwierdzenie), 
+-- a takze przez awarie (wycofanie).
+-- Transakcje mozna podzielic na czesci poprzez nalozenie punktow 
+-- bezpieczenstwa SAVEPOINT nazwa_punktu; (taki punkt mozna usunac poprzez 
+-- polecenie RELEASE SAVEPOINT nazwa_punktu;). Dzieki takiemu podzialowi 
+-- istnieje mozliwosc powrotu do okreslonego momentu transakcji (ROLLBACK TO 
+-- [SAVEPOINT nazwa_punktu;]). Taki powrot nie zakancza transakcji.
+-- Izolacje transakcji od siebie uzyskuje sie przez polecenie:
+-- SET TRANSACTION IZOLATION LEVEL {READ UNCOMMITTED | READ COMMITTED | 
+-- REPEATABLE READ | SERIALIZABLE}; (W Oracle jedynie read committed 
+-- i serializable)
+-- Dla sesji w Oracle:
+-- ALTER SESSION SET ISOLATION_LEVEL = {READ COMMITED | SERIALIZABLE};
+-- Tryb transakcji:
+-- SET TRANSACTION {READ WRITE | READ ONLY};
+
+
+--1. Rozpocznij now¹ transakcjê.
+COMMIT:
+--2. Zwieksz place pracownikowi z numerem 8901 o 500 zlotych.
+UPDATE pracownicy SET placa = placa + 500 WHERE nr_akt = 8901;
+--3. Utworz punkt zachowania.
+SAVEPOINT s1;
+--4. Zwieksz o 10% dodatek funkcyjny pracownikowi z numerem 8902;
+UPDATE pracownicy SET dod_funkcyjny = 1.1*dod_funkcyjny WHERE nr_akt = 8902;
+--5. Utworz punkt zachowania.
+SAVEPOINT s2;
+--6. Usun pracownika o numerze 9120.
+DELETE FROM pracownicy WHERE nr_akt = 9120;
+--7. Wycofaj sie do pierwszego punktu bezpieczenstwa i obejrzyj zawartosc 
+-- tabeli pracownicy.
+ROLLBACK TO SAVEPOINT s1;
+--8. Sprobuj wycofac sie do drugiego punktu zachowania.
+ROLLBACK TO SAVEPOINT s2;
+--9. Wycofaj cala transakcje.
+ROLLBACK;
+--10. Rozpocznij now¹ transakcjê.
+COMMIT;
+--11. Usun pracownika o numerze 9120.
+DELETE FROM pracownicy WHERE nr_akt = 9120;
+--12. Utworz punkt bezpieczenstwa.
+SAVEPOINT s1;
+--13. Zmien nazwe atrybutu dod_funkcyjny na placa_dod w tabeli pracownicy.
+ALTER TABLE pracownicy RENAME COLUMN dod_funkcyjny TO placa_dod;
+--14. Sprobuj wycofac sie do punktu bepieczenstwa.
+ROLLBACK TO SAVEPOINT s1;
+--15. Uruchom dwie sesje tego samego uzytkownika. W jednej z nich podwyzsz
+-- place o 10% pracownikowi z numerem 8902, w drugiej obniz o 10%. Co dzieje sie
+-- w drugiej sesji? Zatwierdz zmiany w pierwszej sesji. Odczytaj place 
+-- pracownika w obu sesjach. Zatwierdz transakcje w drugiej. Odczytaj place 
+-- w pierwszej sesji.
+-- I sesja                            			| II sesja
+UPDATE pracownicy SET placa=placa*1.1 	| UPDATE pracownicy SET placa=placa*0.9
+  WHERE nr_akt = 8902;                		|   WHERE nr_akt = 8902;
+------------------------------------------------------------------------------
+COMMIT;                               		|
+SELECT placa FROm pracownicy          	|SELECT placa FROm pracownicy         
+  WHERE nr_akt = 8902;                		|  WHERE nr_akt = 8902;
+                                      			|COMMIT;
+------------------------------------------------------------------------------
+SELECT placa FROm pracownicy          	|
+  WHERE nr_akt = 8902;               		|
+------------------------------------------------------------------------------
+--16. Rozpocznij nowe transakcje w obu sesjach. W pierwszej sesji ustaw poziom
+-- izolacji transakcji na uszeregowany i odczytaj informacje o pracownikach.
+-- W drugiej sesji ustaw place pracownikowi 8902 na kwote 5000 i zatwierdz 
+-- zmiane. Sprawdz ponownie zawartosc tabeli pracownicy w pierwszej sesji, 
+-- a nastepnie zwieksz place pracownikowi 8902 o 10%. Co zaobserwowales? 
+-- Wycofaj zmiany.
+-- I sesja                            			| II sesja
+COMMIT;                               		|COMMIT;
+------------------------------------------------------------------------------
+SET TRANSACTION ISOLATION LEVEL       	|
+  SERIALIZABLE;                      		|
+SELECT * FROM pracownicy;            		|
+------------------------------------------------------------------------------        
+                                      			|UPDATE pracownicy SET placa = 5000 
+				      	|  WHERE nr_akt = 8902;
+				      	|COMMIT;
+------------------------------------------------------------------------------
+SELECT placa FROm pracownicy          	|
+  WHERE nr_akt = 8902;                		|
+------------------------------------------------------------------------------
+
+--zrodla: 
+-- http://wazniak.mimuw.edu.pl/index.php?title=BD-1st-2.4-lab9.tresc-1.1-toc
+create table towary(
+  symbol varchar2(10) constraint tow_sym_pk primary key,
+  nazwa varchar2(10) not null,
+  cena number(7, 2) constraint tow_cen_ch check (cena > 0),
+  ilosc number(7) constraint tow_ilo_ch check (ilosc >= 0)
+);
+
+insert into towary values ('110/A','Piwo',2,24);
+insert into towary values ('111/B','Cukier',6,50);
+insert into towary values ('112/C','Chleb',3,20);
+insert into towary values ('113/D','Coca-Cola',5.99,40);
+insert into towary values ('114/D','Pepsi',4.99,60);
+insert into towary values ('115/D','Frugo',2,80);
+insert into towary values ('116/E','Czekolada',4,50);
+
+select * from towary;
+
+create table klienci(
+  pesel varchar2(11) constraint kl_pes_ch check (length(pesel)=11),
+  nazwisko varchar2(30) not null,
+  adres varchar2(50) not null
+);
+
+alter table klienci add constraint kl_pes_pk primary key (pesel);
+
+select * from user_constraints where table_name in ('TOWARY', 'KLIENCI');
+
+insert into klienci values ('90011132100','KRÓL','42-200 ul. Akademicka 131');
+insert into klienci values ('90021232102','NOWAK','42-200 ul. Akademicka 132');
+insert into klienci values ('90031332104','NOWICKI','42-200 ul. Akademicka 134');
+insert into klienci values ('90041432106','KOWALSKI','42-200 ul. Akademicka 136');
+insert into klienci values ('90051532108','NOWAK','42-200 ul. Akademicka 138');
+insert into klienci values ('90061632110','JANIC','42-200 ul. Akademicka 140');
+
+select * from klienci;
+
+create table rejestry_sp(
+  numer number(7) constraint rej_num_pk primary key,
+  pesel constraint rej_pes_fk references klienci(pesel),
+  symbol varchar2(10),
+  ile number(4) constraint rej_ile_ch check (ile >= 0),
+  data date,
+  constraint rej_sym_fk foreign key(symbol) references towary(symbol)
+);
+
+select * from user_constraints where table_name in('KLIENCI','TOWARY','REJESTRY_SP');
+
+create sequence seq_rej_sp;
+
+insert into rejestry_sp values (seq_rej_sp.nextval, '90011132100', '114/D', 1, sysdate);
+insert into rejestry_sp (numer, pesel, symbol, ile) values (seq_rej_sp.nextval, '90021232102', '116/E', 1);
+insert into rejestry_sp (numer, pesel, symbol, ile) values (seq_rej_sp.nextval, '90021232102', '115/D', 2);
+insert into rejestry_sp (numer, pesel, symbol, ile) values (seq_rej_sp.nextval, '90011132100', '110/A', 1);
+insert into rejestry_sp (numer, pesel, symbol, ile) values (seq_rej_sp.nextval, '90031332104', '110/A', 6);
+insert into rejestry_sp (numer, pesel, symbol, ile) values (seq_rej_sp.nextval, '90041432106', '111/B', 1);
+
+alter table rejestry_sp modify(data default sysdate);
+
+select * from rejestry_sp;
+select * from towary;
+select * from klienci;
+
+select * from cat;
+
+update towary t set ilosc = ilosc - (select sum(ile) from rejestry_sp where symbol = t.symbol) where t.symbol in (select distinct(symbol) from rejestry_sp);
+
+create or replace view towary_drogie as ( select * from towary where cena > 5 );
+
+select * from towary_drogie;
+
+insert into towary_drogie values ('111/A', 'Wódka', 20, 15);
+insert into towary_drogie values ('117/E', 'Paluszki', 1, 15);
+
+create or replace view towary_drogie as ( select * from towary where cena > 5 ) with chceck option;
+
+insert into towary_drogie values ('118/E', 'Chipsy', 2, 15);
+
+create or replace view zyski as select nazwa, sum(cena * ile) as zysk from towary join rejestry_sp using(symbol) group by nazwa;
+select * from zyski;
+
+create or replace view faktury as select nazwisko, sum(cena * ile) as kwota from klienci join rejestry_sp using(pesel) join towary on rejestry_sp.symbol = towary.symbol group by nazwisko, pesel;
+select * from faktury;
+----------------------------------------------------------------------
+--               LABORATORIUM 11
+----------------------------------------------------------------------
+
+--1. Usuñ tabele pracownicy, prac_archiw, taryfikator, stanowiska i dzialy.
+  drop table pracownicy cascade constrains;
+  drop table prac_archiw cascade constrains;
+  drop table taryfikator cascade constrains;
+  drop table stanowiska cascade constrains;
+  drop table dzialy cascade constrains;
+
+-------------------------CREATE---------------------------------------
+
+--2. Prosze utworzyc tablice pracownicy z polami nr_akt(liczba czterocyfrowa), nazwisko (pietnastoznakowe), stanowisko (osiemnastoznakowe), kierownik (liczba czterocyfrowa), data_zatr domyœlnie dzisiejsza data, placa (siedmiocyfrowa, z dwoma cyframi po przecinku), podobnie prowizja, zainteresowania (osiemnastoznakowe), plec (jeden znak), id_dzialu (liczba dwucyfrowa).
+  create table pracownicy(
+  	nr_akt number(4),
+  	nazwisko varchar2(15),
+  	stanowisko varchar2(18),
+  	kierownik number(4),
+  	data_zatr date default sysdate,
+  	placa number(7,2),
+  	prowizja number(7,2),
+  	zainteresowania varchar2(18),
+  	plec varchar2(1),
+ 	 id_dzialu varchar2(2)
+  );
+
+--3. Usun tabele pracownicy;
+  drop table pracownicy;
+
+--4. Utworz ponownie tablice pracownicy, dodajac ograniczenia: nr_akt klucz g³ówny, nazwisko nie puste, p³eæ mo¿e przyj¹æ jedynie wartoœci k lub m. Dodatkowo utwórz ograniczenie na pole placa, tak by miescila miedzy 1150 a 10000 zlotych, ograniczenie to podaj na koncu definicji tabeli.
+  create table pracownicy(
+  	nr_akt number(4) primary key,
+  	nazwisko varchar2(15) not null,
+  	stanowisko varchar2(18),
+  	kierownik number(4),
+  	data_zatr date default sysdate,
+  	placa number(7,2),
+  	prowizja number(7,2),
+  	zainteresowania varchar2(18),
+ 	plec varchar2(1) check (plec in ('M', 'K')),
+  	id_dzialu varchar2(2),
+  	constraint placa_ch check (placa between 1150 and 10000) 
+  );
+
+--5. Wstaw do tablicy dwie krotki, w jednej pole data_zatr wypelnij wartoscia domyslna.
+  insert into pracownicy values (9990, 'NOWAK', 'PRAKTYKANT', 8901, sysdate, 1100, 0, null, 'M', null);
+  insert into pracownicy values (9991, 'KOWALSKA', 'PRAKTYKANT', 8901, default, 1100, 0, null, 'K', null);
+
+--6. Utworz tabele dzialy z polami id_dzialu (liczba calkowita), nazwa (pietnastoznakowa), siedziba (pietnastoznakowa), naloz klucz glowny na pole id_dzialu.
+  create table dzialy(
+  	id_dzialu number,
+  	nazwa varchar2(15),
+  	siedziba varchar2(15), 
+  	constraint dzi_pk primary key(id_dzialu)
+  );
+
+--7. Wstaw do tabeli dzialy wartosci (10, ZARZAD, CZESTOCHOWA) (40, MARKETING, PARYZ).
+  insert into dzialy values (10, 'ZARZ¥D', 'CZÊSTOCHOWA');
+  insert into dzialy values (40, 'MARKETING', 'PARY¯');
+
+--8. Utwórz tabele pracownice, na bazie danych zwrotnych z zapytania wybieraj¹cego wszystkie dane pracowników, których nazwiska koñcz¹ siê na 'SKA'.
+  create table pracownice as select * from pracownicy where substr(nazwisko, -3) = 'SKA';
+
+--9. Usuñ tabelê pracownice.
+  drop table pracownice;
+
+--10. Utwórz tabelê projekty zawieraj¹ca pola: id_projektu (pieciocyfrowe, unikatowe), nazwa (100 znaków), budzet (liczba 10-cyfrowa, z dwoma cyframi po przecinku), termin_zak (data), nr_kierownika (referencja do nr_akt w pracownikach)
+  create table projekty(
+  	id_projektu number(5) constraint projekt_id_u unique,
+  	nazwa varchar2(100),
+  	budzet numeric(10,2),
+  	termin_zak date,
+  	szef constraint projekt_szef_fk references pracownicy(nr_akt)
+  );
+
+------------------------skrypt owoce.sql-----------------------------------------
+
+--11. Utworz tabele produkty z polami id_towaru (czterocyfrowy klucz glowny), nazwa (trzydziestoznakowa), ilosc (liczba szesciocyfrowa z dwoma cyframi po przecinku), cena (pieciocyfrowa z dwoma cyframi po przecinku).
+  create table produkty(
+	id number(4),
+	nazwa varchar2(30),
+	ilosc number(6,2),
+	cena number(5,2),
+	constraint prod_idt_pk primary key(id)  
+  );
+
+--12. Utworz tabele sprzedaz z kolumnami  id_sprzedazy (czterocyfrowy klucz glowny), id_towaru (czterocyfrowy klucz obcy wskazujacy na tabele produkty i kolumne id_towaru), ilosc , ilosc (liczba szesciocyfrowa z dwoma cyframi po przecinku), data (domyslnie data systemowa).
+  create table sprzedaz(
+	id_sprzedazy number(4),
+	id_towaru number(4),
+	ilosc number(6,2),
+	data date default Sysdate,
+	constraint sprzedaz_ids_pk primary key(id_sprzedazy),
+	constraint sprzedaz_idt_fk foreign key(id_towaru)
+ references produkty(id) on delete cascade  
+  );
+
+--13. Wstaw do powyszych dwoch tabel nastepujace pola 
+
+-- produkty:
+--  1, banan, 200, 4.50
+--  2, cytryna, 300, 4.00
+--  3, kiwi, 100, 4.90
+--  4, jablko, 500, 2.40
+  insert into produkty values(1, 'banan', 200, 4.50);  
+  insert into produkty values(2, 'cytryna', 300, 4.00);  
+  insert into produkty values(3, 'kiwi', 100, 4.90);  
+  insert into produkty values(4, 'jablko', 500, 2.40);
+
+-- sprzedaz:
+--  1, 2, 10, domyslna
+--  2, 2, 20, domyslna
+--  3, 1, 5, domyslna
+--  4, 3, 3, domyslna
+  insert into sprzedaz values(1, 2, 10, default);
+  insert into sprzedaz values(2, 2, 20, default);
+  insert into sprzedaz values(3, 1, 5, default);
+  insert into sprzedaz values(4, 3, 3, default);
+
+
+--14. Zapisz calosc w postaci skryptu przewidujac jego wielokrotne wykorzystanie.
+  zapisaæ plik jako *.sql
+
+--------------------------ALTER--------------------------------------------
+
+--15. Dodaj do tabeli projekty pola typ (20-znakowe) - niepuste, opis (500-znakowe), data_roz (data).
+  alter table projekty add(typ varchar2(20) constraint typ_nn not null, opis varchar2(500), data_roz date);
+
+--16. Prosze nalozyc na pole data_roz wartosc domyslna w postaci daty systemowej.
+  alter table projekty modify(data_roz default sysdate);
+
+--17. Zmieñ ograniczenie na³o¿one na id_projektu na klucz g³ówny.
+  alter table projekty drop unique(id_projektu);
+  alter table projekty modify(id_projektu primary key);
+
+--18. Na³ó¿ na relacjê projekty ograniczenie sprawdzaj¹ce, czy data rozpoczêcia jest mniejsza od terminu zakoñczenia.
+  alter table projekty add(constraint data_ch check (data_roz<termin_zak));
+
+--19. Zmien nazwe kolumny opis na harmonogram.	
+  alter table projekty rename column opis to harmonogram;
+  
+--20. Usun z tabeli pracownicy kolumny plec i zainteresowania.
+  alter table pracownicy drop column zainteresowania;
+  alter table pracownicy drop column plec;
+
+--21. Zaladuj skrypt BAZYbaza.sql. Zmien powiazanie miedzy tabela pracownicy i dzialy na takie z opcja ON DELETE CASCADE, lub ON DELETE SET NULL.
+  alter table pracownicy drop constraint prac_foreign_key;
+  alter table pracownicy add constraint id_dzialu_sn foreign key(id_dzialu) references dzialy(id_dzialu) on delete set null;
+
+  alter table pracownicy modify foreign key(id_dzialu) references dzialy(id_dzialu) on delete cascade;
+
+--22. Usun z tabeli dzialy dzial 30.
+  delete from dzialy where id_dzialu = 30;
+
+--23. Wycofaj operacje.
+  rollback;
+
+--24. Wstaw do tabeli projekty jeden dowolny wiersz.
+  insert into projekty (id_projektu, nazwa, budzet, termin_zak, nr_kierownika, typ, harmonogram, data_roz) values(10, 'The projekt', 10000, to_date('2012/06/06','YYYY/MM/DD'),  8761, '1b', 'Wykonac!', default);
+
+--25. Zawieœ ograniczenie klucza g³ównego na tabeli projekty i ponownie wstaw ten sam wiersz.
+  alter table projekty disable primary key; 
+
+--26. Spróbuj przywróciæ ograniczenie.
+  alter table projekty enable primary key; 
+
+
+--------------------------OGRANICZENIA--------------------------------
+
+--27. Proszê usun¹æ z tablicy pracownika o numerze 8902 (szefa).
+  nie usunie, bo istnieja wiezy,
+  delete from pracownicy where nr_akt = 8902;
+
+--28. Proszê umieœciæ pracownika 8902 w tabeli prac_archiw
+  update pracownicy set data_zwol = sysdate where nr_akt = 8902;
+  insert into prac_archiw (select * from pracownicy where nr_akt = 8902);
+
+--29. Proszê dodaæ nowego pracownika.
+  insert into pracownicy values(9999, 'Wolski', 'LABORANT', 9121, sysdate, null, 1500, null, null, 20);
+
+--30. Zmieñ szefa na nowego tym, ktorzy jako kierownika maja pracownika o numerze 8902
+  update pracownicy set kierownik = 9121 where kierownik = 8902;
+
+--31. Proszê usun¹æ z tablicy pracownika o numerze 8902.
+  delete from pracownicy where nr_akt = 8902;
+----------------------------------------------------------------------
+--               LABORATORIUM 12
+----------------------------------------------------------------------
+
+---------------------------------SEKWENCJE-----------------------------------
+
+--1. Utworz tabele numer, zawierajaca jedno pole liczba (czterocyfrowe);
+  create table numer(
+  	liczba number(4)
+  );
+
+--2. Utworz sekwencje liczba_seq zaczynajaca sie od 100 majaca minimalna wartosc 0, maksymalna 125, zwiekszajaca sie co 5, posiadajaca cykl.
+  create sequence liczba_seq 
+  	start with 100
+  	increment by 5
+  	minvalue 0
+  	maxvalue 125
+  	cycle;
+
+--3. Wstaw 7 wierszy do tabeli numer uzywajac sekwencji liczba_seq.  
+  insert into numer values(liczba_seq.nextval);
+  insert into numer values(liczba_seq.nextval);
+  insert into numer values(liczba_seq.nextval);
+  insert into numer values(liczba_seq.nextval);
+  insert into numer values(liczba_seq.nextval);
+  insert into numer values(liczba_seq.nextval);
+  insert into numer values(liczba_seq.nextval);
+
+--4. Modyfikuj sekwencje tak by zwiêksza³a wartoœæ o 6.
+  alter sequence liczba_seq increment by 6;
+
+--5. Sprawdz aktualna i nastepna wartosc sekwencji.
+  select liczba_seq.currval from dual;
+  select liczba_seq.nextval from dual;
+
+--6. Usun powyzsza sekwencje.
+  drop sequence liczba_seq;
+
+----------------------------------INDEKSY------------------------------------
+
+--7. Utworz indeks na polu nazwisko w tabeli pracownicy.  
+  create index i_pracownicy_naz on pracownicy(nazwisko);
+
+--8. Utworz indeks bitmapowy na polu kierownik w tabeli pracownicy.
+  create bitmap index i_pracownicy_kier on pracownicy(kierownik);
+
+--9. Utworz indeks na polach placa minimalna i maksymalna w tabeli stanowiska.  
+  create index i_stan_minmax on stanowiska(placa_min, placa_max);
+
+
+-------------------------------PERSPEKTYWY----------------------------
+
+--10. Utworz perspektywy studentki na bazie tabeli studenci.
+  create view studentki as select * from studenci where imiona like '%A';
+
+--11. Wybierz nazwisko, imiona i numer indeksu studentek z grupy 2, roku 3.
+  select nazwisko, imiona, nr_albumu from studentki where gr_dziekan = 2 and rok = 3;
+
+--12. Czy mozliwe jest wstawienie danych do powyzszej perspektywy?
+  nie, brak uprawnieñ
+  insert into studentki values('a', 'a', 1, sysdate, 'a', null, 'a', null, 'a', 1, 1, 'a', sysdate);
+
+--13. Utworz perspektywe pracownice, na bazie tabeli pracownicy (nazwiska konczace sie na SKA i CKA).
+  create view pracownice as select * from pracownicy where nazwisko like '%SKA' or nazwisko like '%CKA';
+
+--14. Wstaw wiersz do perspektywy pracownice. 
+  insert into pracownice values(9998, 'KROJEWSKA', 'LABORANT', 9121, sysdate, null, 1500, null, null, 30);
+
+--15. Utworz perspektywe tylko do odczytu, o nazwie miejsce_pracy, zawierajaca nazwisko pracownika i siedzibe dzialu, w ktorym pracuje.
+  create or replace view miejsce_pracy as select nazwisko, siedziba from pracownicy natural join dzialy with read only;
+
+--16. Wstaw dane do perspektywy wszyscy_pracownicy.
+  nie mo¿na manipulowaæ danymi,
+  insert into wszyscy_pracownicy values(9997, 'aa', 'aa', 9121, sysdate, null, 1000, null, null, 40);
+
+--17. Utworz perspektywe dzial10, zawierajaca, numer akt, nazwiska, stanowiska i numer dzialu, pracownikow z dzialu 10, z opcja WITH CHECK OPTION.
+  create view dzial10 as select nr_akt, nazwisko, stanowisko, id_dzialu from pracownicy where id_dzialu = 10 with check option;
+
+--18. Wstaw dane do perspektywy dzial10, sprobuj podac inny numer dzialu niz 10.
+  nie mo¿na wstawiæ osób z innego dzia³u,
+  insert into dzial10 values(9996, 'KASPERSY', 'LABORANT', 20);
+
+--19. Utworz perspektywe szefowie zawierajaca numery akt, nazwiska, liczbe podwladnych, date zatrudnienia, place, dodatki funkcyjne, prowizje i identyfikatory dzialow wszystkich szefow z tabeli pracownicy.
+  create or replace view szefowie as (select nr_akt, nazwisko, (select count(*) from pracownicy where kierownik = z.nr_akt) as Liczba, data_zatr, placa, dod_funkcyjny, prowizja, id_dzialu from pracownicy z where (select count(*) from pracownicy where kierownik = z.nr_akt) > 0);
+
+--20. Utworz perspektywe szef_small na bazie perspektywy szefowie zawierajaca jedynie nazwiska i numery akt.
+  create view szef_small as (select nazwisko, nr_akt from szefowie);
+
+--21. Usun perspektywe szefowie.
+  drop view szefowie;
+
+--22. Czy mozesz wykonac zapytanie na perspektywie szef_small?
+  nie mo¿na,
+  select * from szef_small;
+
+--23. Usun szef_small.
+  drop view szef_small;
+
+
+----------------PERSPEKTYWY SLOWNIKOWE----------------------------
+
+Obejrzyj zawartoœc perspektyw slownikowych:
+
+USER_VIEWS, 
+USER_INDEXES, 
+USER_TABLES, 
+USER_VIEWS, 
+USER_UPDATABLE_COLUMNS, 
+USER_INDEXES, 
+USER_IND_COLUMNS,
+USER_SEQUENCES, 
+USER_CATALOG.
+
+----------------------------------------------------------------------
+--               LABORATORIUM 13
+----------------------------------------------------------------------
+
+----------------------------------MIX---------------------------------
+
+--1. Zaladuj skrypt BAZYbaza.sql i zatwierdz transakcje.
+  commit;
+
+--2. Przenies pracownika o numerze akt 8932 do dzialu 10
+  update pracownicy set id_dzialu = 10 where nr_akt = 8932;
+
+--3. Na jego miejsce zatrudnij w dziale 60 ksiêgowego o nastêpuj¹cych danych: 9909, MATYSZKIEWICZ, KSIÊGOWY, kierownik - 8932, 01-02-2009, z placa 2500, dzial 60.
+  insert into pracownicy (nr_akt, nazwisko, stanowisko, kierownik, data_zatr, placa, id_dzialu) values(9909, 'MATYSZKIEWICZ', 'KSIÊGOWY', 8932, to_date('01-02-2009','DD-MM-YYYY'), 2500, 60);
+
+--4. Usuñ praktykanta, którego nie przydzielono do ¿adnego dzia³u.
+  delete from pracownicy where id_dzialu is null and stanowisko = 'PRAKTYKANT';
+
+--5. Przyznaj dodatek funkcyjny osobom zatrudnionym w 1989 roku. Jego wysokoœæ bêdzie wynosi³a 10% najmniejszego z zawartych tabeli dodatkow.
+  update pracownicy set dod_funkcyjny = (select min(dod_funkcyjny) from pracownicy)*0.1 where to_char(data_zatr, 'YYYY') = '1989' and dod_funkcyjny is null;
+
+--6. Pan Moniuszko (dyrektor z dzialu 20) przechodzi na emeryture, firma zatrudnia na jego miejsce Pana Sztynorta z placa i dodatkiem funkcyjnym o 500 zlotych mniejsza od poprzednika (w koncu ma mniejsze doswiadczenie). Wstaw nowego pracownika i usun starego, jakie jeszcze operacje nalezy wykonac aby usuniecie bylo mozliwe?
+ insert into pracownicy (nr_akt, nazwisko, stanowisko, kierownik, data_zatr, placa, dod_funkcyjny, id_dzialu) values(8912, 'SZTYNORT', 'DYREKTOR', 8901, sysdate, (select placa from pracownicy where nr_akt = 8910) - 500, (select dod_funkcyjny from pracownicy where nr_akt = 8910) - 500, 20);
+ update pracownicy set kierownik = 8912 where kierownik = 8910;
+ delete from pracownicy where nr_akt = 8910;
+
+----------------------------------------------------------------------
+
+--6. Utwórz trzy tabele z odpowiednimi atrybutami: UCZNIOWIE(nr_legitymacji, klasa, wychowawca, data_urodzenia, rodzice, tel_rodzicow1, tel_rodzicow2, adres) NAUCZYCIELE(nr_ident, data_zatr, placa, stopien, pracownia) PRACOWNIE(numer, wyposazenie, typ). Kazda tabela powinna zawierac klucz g³ówny oraz odpowiednie powi¹zania do pozostalych tabel. Dobierz odpowiednie typy i ograniczenia. Zwroc uwage na odpowiednia kolejnosc tworzenia tabel.
+  create table klasy(
+  	numer number(5) constraint klasa_num_pk primary key,
+  	wyposazenie varchar2(500),
+ 	typ varchar2(20)
+  );
+
+  create table nauczyciele(
+  	nr_ident varchar2(5) constraint naucz_nr_pk primary key, 
+  	data_zatr date default sysdate, 
+  	placa number(5), 
+ 	stopien varchar2(20), 
+ 	pracownia constraint naucz_prac_fk references klasy(numer) on delete cascade
+  );
+  
+  create table uczniowie(
+  	nr_legitymacji varchar2(6), 
+  	klasa constraint ucz_kl_fk references klasy(numer) on delete cascade, 
+  	wychowawca varchar2(5), 
+  	data_urodzenia date constraint ucz_ur_nn not null, 
+  	rodzice varchar2(20),
+  	tel_rodzicow1 varchar2(9), 
+ 	tel_rodzicow2 varchar2(9), 
+  	adres varchar2(30),
+  	constraint ucz_nr_pk primary key(nr_legitymacji),
+  	constraint ucz_wych_fk foreign key(wychowawca) references nauczyciele(nr_ident) on delete set null
+  );
+
+--7. Sprawdz jakimi aktualnie tabelami dypsonujesz na swoim koncie. Obejrzyj perspektywy slownikowe zawierajace informacje o tabelach, ograniczeniach.
+  select * from user_tables;
+  select * from cat;
+  select * from user_constrains;
+
+--8. Tabele nauczyciele i uczniowie nie zawieraja danych osobowych. Dodaj pola imiona i nazwisko w kazdej z nich.
+  alter table uczniowie add(imiona varchar2(10), nazwisko varchar2(10));
+  alter table nauczyciele add(imiona varchar2(10), nazwisko varchar2(10));
+
+--9. Zmien typ atrybutu klasa w tabeli uczen na CHAR(2).
+  nie da siê, 
+  alter table uczniowie modify(klasa char(2));
+
+--9. Dodaj ograniczeniena w tabeli nauczyciele tak by placa nie mogla byc ujemna.
+  alter table nauczyciele add constraint naucz_placa_ch check(placa>0);
+
+--10. Wstaw po 4  wiersze do kadej z tabel tabel (tak by miay sens ;))
+  insert into klasy values(1, 'BRAK', 'BIOLOGICZNA');
+  insert into klasy values(2, 'BRAK', 'FIZYCZNA');
+  insert into klasy values(3, 'BRAK', 'SALA LEKCYJNA');
+  insert into klasy values(4, 'BRAK', 'SALA GIMNASTYCZNA');
+
+  insert into nauczyciele values(1, sysdate, 1000, 'MGR', 1, 'WIES£AW', 'NOWAK');
+  insert into nauczyciele values(2, sysdate, 1200, 'MGR', 2, 'ANDRZEJ', 'KOWALSKI');
+  insert into nauczyciele values(3, sysdate, 2000, 'MGR', 3, 'ANNA', 'MA£A');
+  insert into nauczyciele values(4, default, 1500, 'MGR', 4, 'MIROS£AW', 'DU¯Y');
+
+  insert into uczniowie values(1000, 1, 3, to_date('10-10-1990', 'DD-MM-YYYY'), 'ANDRZEJ, MARIANNA', null, null, null, 'MICHA£', 'NOWAK');
+  insert into uczniowie values(1001, 1, 3, to_date('20-11-1990', 'DD-MM-YYYY'), 'ADAM, IZA', null, null, null, 'ADRIAN', 'KOWALSKI');
+  insert into uczniowie values(1002, 2, 2, to_date('30-12-1990', 'DD-MM-YYYY'), 'RAFA£, ANNA', null, null, null, 'MA£GOSIA', 'NIEMA£A');
+  insert into uczniowie values(1003, 2, 4, to_date('01-02-1990', 'DD-MM-YYYY'), '£UKASZ, ANETA', null, null, null, '£UKASZ', 'NIEDZIELNY');
+ 
+--11. Utworz sekwencje, która wspomoze wstawianie danych do tabeli nauczyciel.
+  create sequence seq_naucz_nr;
+
+--12. Na³ó¿ indeksy na atrybuty kluczy obcych powyzszych tabel. Sprawdz jakimi indeksami dysponujesz na swoim koncie.
+  create index i_naucz on nauczyciele(pracownia);
+  create index i_ucz on uczniowie(klasa);
+  create index i_ucz2 on uczniowie(wychowawca);
+
+--13. Utworz perspektywe, która pokazuje ilu uczniow, w której klasie posiada ka¿dy wychowawca. Czy mozliwa jest modyfikacja danych przez ta perspektywe?
+  nie, 
+  create view ilu_uczniow as (select n.imiona || n.nazwisko as wych, klasa, count(*) as ile from uczniowie u join nauczyciele n on (u.wychowawca = n.nr_ident) group by n.imiona || n.nazwisko, klasa);
+
+--14. Utworz perspektywe, ktora pokaze id nauczyciela i pracownie, za ktora odpowiada. Czy mozliwa jest modyfikacja danych przez ta perspektywe?
+  nie, 
+  create or replace view pracownie_nauczycieli as (select imiona || ' ' || nazwisko, numer from nauczyciele join klasy on (pracownia = numer));
